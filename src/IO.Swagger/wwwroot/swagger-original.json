@@ -1,0 +1,369 @@
+{
+  "openapi" : "3.0.3",
+  "info" : {
+    "title" : "Training Journal - OpenAPI 3.0",
+    "description" : "This a personal training journal API Server based on the OpenAPI 3.0 specification.\n\n### GitHub repo of the project:\n- [My GitHub](https://github.com/aminsys/training-journal)",
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8080/api/v1"
+  } ],
+  "security" : [ {
+    "basicAuth" : [ ]
+  } ],
+  "tags" : [ {
+    "name" : "user",
+    "description" : "A user of the training journal. A user is also the individual that performs training.",
+    "externalDocs" : {
+      "url" : "http://docs.localhost:8080/user-operations.htm"
+    }
+  }, {
+    "name" : "trainingSessions",
+    "description" : "The training session that is performed by the user.",
+    "externalDocs" : {
+      "url" : "http://docs.localhost:8080/session-operations.htm"
+    }
+  }, {
+    "name" : "exercises",
+    "description" : "The exercise that is performed by the user. An exercise is a part of a traingin session and consists of sets and reps (optional).",
+    "externalDocs" : {
+      "url" : "http://docs.localhost:8080/exercise-operations.htm"
+    }
+  }, {
+    "name" : "weights",
+    "description" : "The user's weight for the day described in kilograms (kg).",
+    "externalDocs" : {
+      "url" : "http://docs.localhost:8080/weight-operations.htm"
+    }
+  }, {
+    "name" : "diets",
+    "description" : "The user's diet for that day in free-text format.",
+    "externalDocs" : {
+      "url" : "http://docs.localhost:8080/diet-operations.htm"
+    }
+  }, {
+    "name" : "login",
+    "description" : "The user's login credentials"
+  } ],
+  "paths" : {
+    "/login" : {
+      "post" : {
+        "tags" : [ "login" ],
+        "summary" : "User's login action.",
+        "operationId" : "login",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/login_body"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Login successful",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized"
+          }
+        }
+      }
+    },
+    "/user" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "Get a user object.",
+        "responses" : {
+          "200" : {
+            "description" : "successful request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "User not found"
+          }
+        }
+      }
+    },
+    "/user/trainingSessions" : {
+      "get" : {
+        "tags" : [ "trainingSessions" ],
+        "summary" : "Get a user's collection of training sessions.",
+        "responses" : {
+          "200" : {
+            "description" : "successful request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TrainingSessions"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Training sessions not found for the user"
+          }
+        }
+      }
+    },
+    "/user/trainingSessions/{trainingSessionId}" : {
+      "get" : {
+        "tags" : [ "trainingSessions" ],
+        "summary" : "Get a user's single training session by ID.",
+        "operationId" : "getTrainingSessionById",
+        "parameters" : [ {
+          "name" : "trainingSessionId",
+          "in" : "path",
+          "description" : "Training session's ID",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TrainingSession"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Training session is not found"
+          }
+        }
+      }
+    },
+    "/user/trainingSessions/{trainingSessionId}/exercises" : {
+      "get" : {
+        "tags" : [ "Exercise" ],
+        "summary" : "Get user's exercises related to the training session.",
+        "operationId" : "getExercisesByTrainingSessionId",
+        "parameters" : [ {
+          "name" : "trainingSessionId",
+          "in" : "path",
+          "description" : "Training session's ID",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Exercises"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Exercises not found for the the training session"
+          }
+        }
+      }
+    },
+    "/user/diet" : {
+      "get" : {
+        "tags" : [ "diet" ],
+        "summary" : "Get the user's collection of registered diets.",
+        "responses" : {
+          "200" : {
+            "description" : "successful request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Diet"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Diet collection not found for the user"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "User" : {
+        "required" : [ "password", "username" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "User's ID",
+            "format" : "int64",
+            "example" : 1001
+          },
+          "username" : {
+            "type" : "string",
+            "description" : "Username",
+            "example" : "KrisSeath100Gain"
+          },
+          "password" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "example" : {
+          "username" : "KrisSeath100Gain",
+          "id" : 1001
+        }
+      },
+      "TrainingSessions" : {
+        "type" : "object",
+        "properties" : {
+          "trainingSessionId" : {
+            "type" : "integer",
+            "description" : "Training session's ID",
+            "format" : "int64",
+            "example" : 3
+          },
+          "trainingsName" : {
+            "type" : "string",
+            "description" : "Name of training session",
+            "example" : "Chest workout"
+          }
+        },
+        "example" : {
+          "trainingSessionId" : 3,
+          "trainingsName" : "Chest workout"
+        }
+      },
+      "TrainingSession" : {
+        "type" : "object",
+        "properties" : {
+          "trainingSessionId" : {
+            "type" : "integer",
+            "description" : "Training session's ID",
+            "format" : "int64",
+            "example" : 3
+          },
+          "trainingsName" : {
+            "type" : "string",
+            "description" : "Name of training session",
+            "example" : "Chest and triceps workout"
+          },
+          "exercises" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "example" : {
+          "exercises" : [ "exercises", "exercises" ],
+          "trainingSessionId" : 3,
+          "trainingsName" : "Chest and triceps workout"
+        }
+      },
+      "Exercises" : {
+        "type" : "object",
+        "properties" : {
+          "exerciseId" : {
+            "type" : "integer",
+            "description" : "Exercise's ID",
+            "format" : "int64",
+            "example" : 12
+          },
+          "exerciseName" : {
+            "type" : "string",
+            "description" : "Name of exercise",
+            "example" : "Bench press"
+          },
+          "sets" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 2
+          },
+          "reps" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 10
+          }
+        },
+        "example" : {
+          "exerciseName" : "Bench press",
+          "reps" : 10,
+          "exerciseId" : 12,
+          "sets" : 2
+        }
+      },
+      "Diet" : {
+        "type" : "object",
+        "properties" : {
+          "DietId" : {
+            "type" : "integer",
+            "description" : "Diet ID",
+            "format" : "int64",
+            "example" : 62
+          },
+          "Info" : {
+            "type" : "string",
+            "description" : "Name of training session",
+            "example" : "Chest workout"
+          }
+        },
+        "example" : {
+          "Info" : "Chest workout",
+          "DietId" : 62
+        }
+      },
+      "login_body" : {
+        "type" : "object",
+        "properties" : {
+          "username" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          }
+        }
+      },
+      "inline_response_200" : {
+        "type" : "object",
+        "properties" : {
+          "token" : {
+            "type" : "string"
+          }
+        },
+        "example" : {
+          "token" : "token"
+        }
+      }
+    },
+    "securitySchemes" : {
+      "basicAuth" : {
+        "type" : "http",
+        "scheme" : "basic"
+      }
+    }
+  }
+}
